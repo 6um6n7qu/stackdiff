@@ -52,6 +52,7 @@ stackdiff --source prod:api-service --target staging:api-service --output json
 | `--target` | Target environment or service | required |
 | `--output` | Output format: `text`, `json`, `yaml` | `text` |
 | `--ignore` | Comma-separated keys to ignore | none |
+| `--exit-code` | Exit with code 1 if drift is detected | `false` |
 
 ---
 
