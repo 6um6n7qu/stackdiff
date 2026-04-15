@@ -43,3 +43,12 @@ func Validate(cfg map[string]string) error {
 	}
 	return nil
 }
+
+// MustValidate is like Validate but panics if the config is invalid.
+// It is intended for use during program initialization where an invalid
+// config is an unrecoverable error.
+func MustValidate(cfg map[string]string) {
+	if err := Validate(cfg); err != nil {
+		panic("config validation failed: " + err.Error())
+	}
+}
