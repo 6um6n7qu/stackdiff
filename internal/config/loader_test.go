@@ -60,3 +60,13 @@ func TestLoadFromFile_EmptyFile(t *testing.T) {
 		t.Errorf("expected empty config, got %d keys", len(cfg))
 	}
 }
+
+func TestLoadFromFile_NonStringValues(t *testing.T) {
+	content := "PORT: 5432\nDEBUG: true\nRATIO: 0.5\n"
+	path := writeTempFile(t, content)
+
+	_, err := LoadFromFile(path)
+	if err == nil {
+		t.Fatal("expected error for non-string values, got nil")
+	}
+}
