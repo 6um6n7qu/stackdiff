@@ -1,44 +1,50 @@
 package diff
 
-import "github.com/stackdiff/stackdiff/internal/config"
-
-// DriftKind categorises the type of difference found between two configs.
-type DriftKind string
+// Kind represents the type of difference between two configs.
+type Kind string
 
 const (
-	Added    DriftKind = "added"    // key exists in B but not A
-	Removed  DriftKind = "removed"  // key exists in A but not B
-	Changed  DriftKind = "changed"  // key exists in both but values differ
+	Added   Kind = "added"
+	Removed Kind = "removed"
+	Changed Kind = "changed"
 )
 
-// DriftEntry represents a single divergence between two configs.
-type DriftEntry struct {
-	Key      string
-	Kind     DriftKind
-	ValueA   string
-	ValueB   string
+// DiffEntry describes a single key-level difference.
+type DiffEntry struct {
+	Key      string `json:"key"`
+	Kind     Kind   `json:"kind"`
+	OldValue string `json:"old_value,omitempty"`
+	NewValue string `json:"new_value,omitempty"`
 }
 
-// Compare returns a slice of DriftEntry describing every difference
-// between cfgA and cfgB.
-func Compare(cfgA, cfgB config.Config) []DriftEntry {
-	var entries []DriftEntry
+// Compare returns the list of differences between source and target config maps.
+// Keys present only in target are Added; only in source are Removed; in both
+// but with different values are Changed.
+func Compare(source, target map[string]string) []DiffEntry {
+	var entries []DiffEntry
 
-	// Keys in A — check for removals and changes.
-	for k, va := range cfgA {
-		if vb, ok := cfgB[k]; !ok {
-			entries = append(entries, DriftEntry{Key: k, Kind: Removed, ValueA: va})
-		} else if va != vb {
-			entries = append(entries, DriftEntry{Key: k, Kind: Changed, ValueA: va, ValueB: vb})
+	for k, tv := range target {
+		if sv, ok := source[k]; !ok {
+			entries = append(entries, DiffEntry{Key: k, Kind: Added, NewValue: tv})
+		} else if sv != tv {
+			entries = append(entries, DiffEntry{Key: k, Kind: Changed, OldValue: sv, NewValue: tv})
 		}
 	}
 
-	// Keys only in B — additions.
-	for k, vb := range cfgB {
-		if _, ok := cfgA[k]; !ok {
-			entries = append(entries, DriftEntry{Key: k, Kind: Added, ValueB: vb})
+	for k, sv := range source {
+		if _, ok := target[k]; !ok {
+			entries = append(entries, DiffEntry{Key: k, Kind: Removed, OldValue: sv})
 		}
 	}
 
+	sortEntries(entries)
 	return entries
+}
+
+func sortEntries(entries []DiffEntry) {
+	for i := 1; i < len(entries); i++ {
+		for j := i; j > 0 && entries[j].Key < entries[j-1].Key; j-- {
+			entries[j], entries[j-1] = entries[j-1], entries[j]
+		}
+	}
 }
