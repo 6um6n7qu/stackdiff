@@ -13,6 +13,12 @@ type ResolvedProfile struct {
 	Entries map[string]string
 }
 
+// Lookup returns the value for the given key, and whether it was found.
+func (r *ResolvedProfile) Lookup(key string) (string, bool) {
+	v, ok := r.Entries[key]
+	return v, ok
+}
+
 // Resolve loads the env file referenced by the profile, applies env var
 // expansion, and returns a ResolvedProfile ready for comparison.
 func Resolve(p *Profile) (*ResolvedProfile, error) {
