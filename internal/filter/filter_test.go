@@ -62,3 +62,10 @@ func TestApply_EmptyEntries(t *testing.T) {
 		t.Errorf("expected empty result, got %d entries", len(result))
 	}
 }
+
+func TestApply_KeyPrefixNoMatch(t *testing.T) {
+	result := filter.Apply(sampleEntries, filter.Options{KeyPrefix: "UNKNOWN_"})
+	if len(result) != 0 {
+		t.Errorf("expected 0 entries for non-matching prefix, got %d", len(result))
+	}
+}
