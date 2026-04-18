@@ -69,3 +69,16 @@ func TestApply_KeyPrefixNoMatch(t *testing.T) {
 		t.Errorf("expected 0 entries for non-matching prefix, got %d", len(result))
 	}
 }
+
+func TestApply_OnlyDiffs(t *testing.T) {
+	// OnlyDiffs should return all entries that are not equal (changed, added, or removed).
+	result := filter.Apply(sampleEntries, filter.Options{OnlyDiffs: true})
+	if len(result) != 3 {
+		t.Errorf("expected 3 non-equal entries, got %d", len(result))
+	}
+	for _, e := range result {
+		if e.Status == diff.StatusEqual {
+			t.Errorf("unexpected equal entry in OnlyDiffs result: %+v", e)
+		}
+	}
+}
