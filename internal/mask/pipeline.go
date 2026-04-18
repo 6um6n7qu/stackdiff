@@ -8,8 +8,9 @@ func ApplyToEntries(m *Masker, entries []diff.Entry) []diff.Entry {
 	result := make([]diff.Entry, len(entries))
 	for i, e := range entries {
 		if m.IsSensitive(e.Key) {
-			e.OldVal = maskIfNonEmpty(e.OldVal, m.replacementFor(e.Key))
-			e.NewVal = maskIfNonEmpty(e.NewVal, m.replacementFor(e.Key))
+			replacement := m.replacementFor(e.Key)
+			e.OldVal = maskIfNonEmpty(e.OldVal, replacement)
+			e.NewVal = maskIfNonEmpty(e.NewVal, replacement)
 		}
 		result[i] = e
 	}
