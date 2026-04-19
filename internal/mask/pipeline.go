@@ -17,6 +17,17 @@ func ApplyToEntries(m *Masker, entries []diff.Entry) []diff.Entry {
 	return result
 }
 
+// CountMasked returns the number of entries whose values would be masked.
+func CountMasked(m *Masker, entries []diff.Entry) int {
+	count := 0
+	for _, e := range entries {
+		if m.IsSensitive(e.Key) {
+			count++
+		}
+	}
+	return count
+}
+
 func maskIfNonEmpty(val, replacement string) string {
 	if val == "" {
 		return val
