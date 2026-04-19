@@ -38,6 +38,7 @@ type Result struct {
 }
 
 // Evaluate checks a score.Result against the configured thresholds.
+// Warning must be less than Critical; if not, Critical takes precedence.
 func Evaluate(s score.Result, cfg Config) Result {
 	switch {
 	case s.Score >= cfg.Critical:
@@ -64,4 +65,18 @@ func Evaluate(s score.Result, cfg Config) Result {
 // Breached returns true if the level is warning or critical.
 func (r Result) Breached() bool {
 	return r.Level != LevelOK
+}
+
+// String returns a human-readable representation of the result level.
+func (l Level) String() string {
+	switch l {
+	case LevelOK:
+		return "OK"
+	case LevelWarning:
+		return "Warning"
+	case LevelCritical:
+		return "Critical"
+	default:
+		return string(l)
+	}
 }
