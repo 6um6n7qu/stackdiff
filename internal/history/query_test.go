@@ -20,6 +20,14 @@ func makeRecord(ts time.Time, entries []diff.Entry) Record {
 	return r
 }
 
+// sampleEntries returns a small set of diff entries for use in tests
+// that require at least one drift entry to be present.
+func sampleEntries() []diff.Entry {
+	return []diff.Entry{
+		{Key: "service.replicas", Left: "2", Right: "3"},
+	}
+}
+
 func TestQuery_NoFilters(t *testing.T) {
 	now := time.Now()
 	records := []Record{
