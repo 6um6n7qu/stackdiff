@@ -1,11 +1,16 @@
-// Package diff provides types and utilities for comparing two sets of
-// configuration entries and representing the resulting drift.
+// Package diff provides primitives for comparing two sets of configuration
+// entries and representing the resulting differences.
 //
-// Core concepts:
+// Core types and functions:
 //
-//   - Entry: a single key/value pair with an associated drift status.
-//   - Compare: compares two maps and returns a slice of Entry values.
-//   - Chain: applies an ordered sequence of named transformations to entries,
-//     optionally recording intermediate results for tracing.
-//   - Print: renders a slice of entries to an io.Writer.
+//   - Entry / Status  – a single key/value pair annotated with its drift status
+//     (equal, added, removed, or changed).
+//   - Compare          – produces a slice of Entry values from two config maps.
+//   - Print            – formats a diff for human-readable output.
+//   - Chain            – applies a sequence of transformation steps to entries.
+//   - MergeEntries     – combines two entry slices with configurable conflict strategy.
+//   - ComputeStats     – aggregates counts per status.
+//   - ApplyWindow      – filters entries to a time-based window.
+//   - Rank / RankEntries – orders entries by drift severity so the most
+//     impactful changes surface first.
 package diff
