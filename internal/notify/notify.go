@@ -47,6 +47,7 @@ func New(cfg Config) *Notifier {
 }
 
 // Notify sends a notification if any entries represent drift.
+// Returns nil without sending if no drift is detected.
 func (n *Notifier) Notify(entries []diff.Entry) error {
 	var drifted []diff.Entry
 	for _, e := range entries {
@@ -58,6 +59,22 @@ func (n *Notifier) Notify(entries []diff.Entry) error {
 		return nil
 	}
 	msg := buildMessage(drifted)
+	switch n.cfg.Channel {
+	case ChannelSlack:
+		return sendSlack(n.cfg.Destination, msg)
+	default:
+		_, err := fmt.Fprintln(n.cfg.Writer, msg)
+		return err
+	}
+}
+
+// NotifyAll sends a notification for all entries regardless of drift status.
+// This is useful for reporting a full summary including unchanged resources.
+func (n *Notifier) NotifyAll(entries []diff.Entry) error {
+	if len(entries) == 0 {
+		return nil
+	}
+	msg := buildMessage(entries)
 	switch n.cfg.Channel {
 	case ChannelSlack:
 		return sendSlack(n.cfg.Destination, msg)
