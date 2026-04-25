@@ -36,6 +36,17 @@ func TestApply_RateZero_ReturnsEmpty(t *testing.T) {
 	}
 }
 
+func TestApply_EmptyInput_ReturnsEmpty(t *testing.T) {
+	result := sample.Apply(nil, sample.DefaultConfig())
+	if len(result) != 0 {
+		t.Fatalf("expected 0 for nil input, got %d", len(result))
+	}
+	result = sample.Apply([]diff.Entry{}, sample.DefaultConfig())
+	if len(result) != 0 {
+		t.Fatalf("expected 0 for empty input, got %d", len(result))
+	}
+}
+
 func TestApply_MaxEntries_Caps(t *testing.T) {
 	entries := makeEntries(50)
 	cfg := sample.Config{Rate: 1.0, MaxEntries: 10}
